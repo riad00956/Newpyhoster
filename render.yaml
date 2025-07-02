@@ -5,7 +5,7 @@ services:
     plan: free
     branch: main
     buildCommand: pip install -r requirements.txt
-    startCommand: python bot.py
+    startCommand: python app.py
     envVars:
       - key: MANAGER_BOT_TOKEN
         value: "7913791680:AAHmO83t1vF7GzTi80msCLloSV7cAufWbKo"
