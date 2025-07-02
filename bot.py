@@ -8,7 +8,7 @@ load_dotenv()
 
 MANAGER_BOT_TOKEN = os.getenv('7913791680:AAHmO83t1vF7GzTi80msCLloSV7cAufWbKo')
 ADMIN_ID = int(os.getenv('7832264582'))
-CONTACT = os.getenv('+8801650194635 only sms please.')
+CONTACT = os.getenv('@rahbro22')
 
 USERS_FILE = 'users.json'
 
