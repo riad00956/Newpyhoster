@@ -6,9 +6,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MANAGER_BOT_TOKEN = os.getenv('MANAGER_BOT_TOKEN')
-ADMIN_ID = int(os.getenv('ADMIN_ID'))
-CONTACT = os.getenv('CONTACT')
+MANAGER_BOT_TOKEN = os.getenv('7913791680:AAHmO83t1vF7GzTi80msCLloSV7cAufWbKo')
+ADMIN_ID = int(os.getenv('7832264582'))
+CONTACT = os.getenv('+8801650194635 only sms please.')
 
 USERS_FILE = 'users.json'
 
