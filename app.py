@@ -4,6 +4,7 @@ from telegram import Update, Bot
 from telegram.ext import Updater, CommandHandler, CallbackContext
 from dotenv import load_dotenv
 
+# Load environment variables from .env file
 load_dotenv()
 
 MANAGER_BOT_TOKEN = os.getenv('MANAGER_BOT_TOKEN')
@@ -12,6 +13,7 @@ CONTACT = os.getenv('CONTACT')
 
 USERS_FILE = 'users.json'
 
+# Load saved user tokens
 def load_users():
     try:
         with open(USERS_FILE, 'r') as f:
@@ -19,38 +21,39 @@ def load_users():
     except FileNotFoundError:
         return {}
 
+# Save updated user tokens
 def save_users(users):
     with open(USERS_FILE, 'w') as f:
         json.dump(users, f, indent=2)
 
+# Start command
 def start(update: Update, context: CallbackContext):
     update.message.reply_text(
-        "👋 স্বাগতম!\n\n"
-        "আপনার নিজস্ব টেলিগ্রাম বট হোস্ট করতে:\n"
-        "`/addtoken <your_bot_token>`\n"
-        "দিয়ে শুরু করুন।\n\n"
-        "✅ তারপর `/mybot` দিয়ে পরীক্ষা করুন।",
+        "👋 স্বাগতম AIR BOT HOSTING BOT এ!\n\n"
+        "আপনার বট হোস্ট করতে `/addtoken <your_bot_token>` লিখুন।\n"
+        "✅ তারপর `/mybot` দিয়ে আপনার বট টেস্ট করুন।",
         parse_mode='Markdown'
     )
 
+# Add bot token command
 def add_token(update: Update, context: CallbackContext):
     users = load_users()
     user_id = str(update.message.from_user.id)
 
     if len(context.args) != 1:
-        update.message.reply_text("⚠️ ব্যবহার: `/addtoken <YOUR_BOT_TOKEN>`", parse_mode='Markdown')
+        update.message.reply_text("⚠️ সঠিকভাবে লিখুন: `/addtoken <YOUR_BOT_TOKEN>`", parse_mode='Markdown')
         return
 
     token = context.args[0]
-
     if len(token) < 20 or ':' not in token:
-        update.message.reply_text("❌ টোকেনটি ভুল, অনুগ্রহ করে সঠিক টোকেন দিন।")
+        update.message.reply_text("❌ টোকেন ভুল। অনুগ্রহ করে সঠিক টোকেন দিন।")
         return
 
     users[user_id] = token
     save_users(users)
-    update.message.reply_text("✅ টোকেন সেভ হয়েছে! এখন `/mybot` দিয়ে পরীক্ষা করুন।", parse_mode='Markdown')
+    update.message.reply_text("✅ টোকেন সংরক্ষণ করা হয়েছে। এখন `/mybot` দিয়ে টেস্ট করুন।", parse_mode='Markdown')
 
+# Test user's bot
 def mybot(update: Update, context: CallbackContext):
     users = load_users()
     user_id = str(update.message.from_user.id)
@@ -62,26 +65,28 @@ def mybot(update: Update, context: CallbackContext):
     token = users[user_id]
     try:
         user_bot = Bot(token=token)
-        user_bot.send_message(chat_id=update.message.chat_id, text="🤖 আপনার বট সফলভাবে কাজ করছে!")
-        update.message.reply_text("✅ টেস্ট সফল!")
+        user_bot.send_message(chat_id=update.message.chat_id, text="🤖 আপনার বট কাজ করছে!")
+        update.message.reply_text("✅ টেস্ট সফল।")
     except Exception as e:
-        update.message.reply_text(f"❌ বট মেসেজ পাঠাতে ব্যর্থ: {e}")
+        update.message.reply_text(f"❌ ত্রুটি: {e}")
 
+# Admin-only command
 def admin_panel(update: Update, context: CallbackContext):
     user_id = update.message.from_user.id
     if user_id != ADMIN_ID:
-        update.message.reply_text("🚫 আপনি এই কমান্ড ব্যবহার করার অনুমতি পাননি।")
+        update.message.reply_text("🚫 এই কমান্ড কেবল অ্যাডমিনের জন্য।")
         return
 
     users = load_users()
     total_users = len(users)
     text = (
-        "🛠️ *Admin Panel*\n\n"
+        f"🛠️ *Admin Panel*\n\n"
         f"👥 মোট ইউজার: {total_users}\n"
-        f"📞 কন্টাক্ট: {CONTACT}"
+        f"📞 Contact: {CONTACT}"
     )
     update.message.reply_text(text, parse_mode='Markdown')
 
+# Main function
 def main():
     updater = Updater(MANAGER_BOT_TOKEN, use_context=True)
     dp = updater.dispatcher
@@ -91,7 +96,7 @@ def main():
     dp.add_handler(CommandHandler("mybot", mybot))
     dp.add_handler(CommandHandler("admin", admin_panel))
 
-    print("🤖 Bot is running...")
+    print("✅ AIR BOT HOSTING BOT is running on Render...")
     updater.start_polling()
     updater.idle()
 
