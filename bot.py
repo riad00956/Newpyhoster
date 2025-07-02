@@ -6,9 +6,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-MANAGER_BOT_TOKEN = os.getenv('7913791680:AAHmO83t1vF7GzTi80msCLloSV7cAufWbKo')
-ADMIN_ID = int(os.getenv('7832264582'))
-CONTACT = os.getenv('@rahbro22')
+MANAGER_BOT_TOKEN = os.getenv('MANAGER_BOT_TOKEN')
+ADMIN_ID = int(os.getenv('ADMIN_ID'))
+CONTACT = os.getenv('CONTACT')
 
 USERS_FILE = 'users.json'
 
@@ -25,9 +25,12 @@ def save_users(users):
 
 def start(update: Update, context: CallbackContext):
     update.message.reply_text(
-        "স্বাগতম! আপনার বট হোস্ট করার জন্য /addtoken <your_bot_token> কমান্ডটি ব্যবহার করুন।
-"
-        "আপনার বট টোকেন জমা দেওয়ার পরে /mybot দিয়ে বট টেস্ট করুন।"
+        "👋 স্বাগতম!\n\n"
+        "আপনার নিজস্ব টেলিগ্রাম বট হোস্ট করতে:\n"
+        "`/addtoken <your_bot_token>`\n"
+        "দিয়ে শুরু করুন।\n\n"
+        "✅ তারপর `/mybot` দিয়ে পরীক্ষা করুন।",
+        parse_mode='Markdown'
     )
 
 def add_token(update: Update, context: CallbackContext):
@@ -35,49 +38,48 @@ def add_token(update: Update, context: CallbackContext):
     user_id = str(update.message.from_user.id)
 
     if len(context.args) != 1:
-        update.message.reply_text("ব্যবহার: /addtoken <YOUR_BOT_TOKEN>")
+        update.message.reply_text("⚠️ ব্যবহার: `/addtoken <YOUR_BOT_TOKEN>`", parse_mode='Markdown')
         return
 
     token = context.args[0]
 
-    # সহজ যাচাই - টোকেন কমপক্ষে 20 ক্যারেক্টার
     if len(token) < 20 or ':' not in token:
-        update.message.reply_text("❌ টোকেনটি সঠিক মনে হচ্ছে না, দয়া করে সঠিক টোকেন দিন।")
+        update.message.reply_text("❌ টোকেনটি ভুল, অনুগ্রহ করে সঠিক টোকেন দিন।")
         return
 
     users[user_id] = token
     save_users(users)
-    update.message.reply_text("✅ আপনার বট টোকেন সেভ হয়েছে! এখন /mybot কমান্ড দিয়ে পরীক্ষা করুন।")
+    update.message.reply_text("✅ টোকেন সেভ হয়েছে! এখন `/mybot` দিয়ে পরীক্ষা করুন।", parse_mode='Markdown')
 
 def mybot(update: Update, context: CallbackContext):
     users = load_users()
     user_id = str(update.message.from_user.id)
 
     if user_id not in users:
-        update.message.reply_text("আপনার বট টোকেন পাওয়া যায়নি। আগে /addtoken কমান্ড দিয়ে টোকেন দিন।")
+        update.message.reply_text("⚠️ আপনি এখনো কোনো টোকেন যুক্ত করেননি। `/addtoken <TOKEN>` দিয়ে যুক্ত করুন।", parse_mode='Markdown')
         return
 
     token = users[user_id]
     try:
         user_bot = Bot(token=token)
-        user_bot.send_message(chat_id=update.message.chat_id, text="✅ আপনার বট সঠিকভাবে কাজ করছে!")
-        update.message.reply_text("আপনার বট সফলভাবে মেসেজ পাঠিয়েছে।")
+        user_bot.send_message(chat_id=update.message.chat_id, text="🤖 আপনার বট সফলভাবে কাজ করছে!")
+        update.message.reply_text("✅ টেস্ট সফল!")
     except Exception as e:
-        update.message.reply_text(f"বট মেসেজ পাঠাতে সমস্যা হয়েছে: {e}")
+        update.message.reply_text(f"❌ বট মেসেজ পাঠাতে ব্যর্থ: {e}")
 
 def admin_panel(update: Update, context: CallbackContext):
     user_id = update.message.from_user.id
     if user_id != ADMIN_ID:
-        update.message.reply_text("❌ আপনি এই কমান্ড ব্যবহার করার অনুমতি পাননি।")
+        update.message.reply_text("🚫 আপনি এই কমান্ড ব্যবহার করার অনুমতি পাননি।")
         return
 
     users = load_users()
     total_users = len(users)
-    text = f"🛠️ *Admin Panel*
-
-👥 মোট ইউজার: {total_users}
-
-📞 Contact: {CONTACT}"
+    text = (
+        "🛠️ *Admin Panel*\n\n"
+        f"👥 মোট ইউজার: {total_users}\n"
+        f"📞 কন্টাক্ট: {CONTACT}"
+    )
     update.message.reply_text(text, parse_mode='Markdown')
 
 def main():
@@ -89,8 +91,8 @@ def main():
     dp.add_handler(CommandHandler("mybot", mybot))
     dp.add_handler(CommandHandler("admin", admin_panel))
 
+    print("🤖 Bot is running...")
     updater.start_polling()
-    print("Bot started...")
     updater.idle()
 
 if __name__ == '__main__':
