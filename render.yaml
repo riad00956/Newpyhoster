@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: air-bot-hosting-python
+    env: python
+    plan: free
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: python bot.py
+    envVars:
+      - key: MANAGER_BOT_TOKEN
+        value: "7913791680:AAHmO83t1vF7GzTi80msCLloSV7cAufWbKo"
+      - key: ADMIN_ID
+        value: "7832264582"
+      - key: CONTACT
+        value: "+8801650194635 sms only please"
