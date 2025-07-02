@@ -12,4 +12,4 @@ services:
       - key: ADMIN_ID
         value: "7832264582"
       - key: CONTACT
-        value: "+8801650194635 sms only please"
+        value: "@rahbro22"
